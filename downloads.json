@@ -1,0 +1,30 @@
+[
+  {
+    "url": "https://www.youtube.com/watch?v=1XeW1rfrSRE",
+    "title": "Porsche 911 GT2 RS Black Forest Drive | RAW Sound",
+    "duration": 464,
+    "resolution": "3840x1920",
+    "width": 3840,
+    "height": 1920,
+    "fps": 25,
+    "video_bitrate_kbps": 11121.308,
+    "audio_bitrate_kbps": 102.399,
+    "total_bitrate_kbps": 11223.707,
+    "filesize": 0,
+    "downloaded_at": "2025-09-15T20:56:24.942082+02:00"
+  },
+  {
+    "url": "https://www.youtube.com/watch?v=HcOU9UgSpT4",
+    "title": "LeBron James - All Of The Lights",
+    "duration": 379,
+    "resolution": "1280x720",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "video_bitrate_kbps": 1441.329,
+    "audio_bitrate_kbps": 127.495,
+    "total_bitrate_kbps": 1568.824,
+    "filesize": 0,
+    "downloaded_at": "2025-09-15T21:02:34.896388+02:00"
+  }
+]
