@@ -1,1 +1,6 @@
 .venv
+yeet-tube
+launch.sh
+*.mp4
+downloads.json
+.DS_Store

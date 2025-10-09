@@ -186,13 +186,28 @@ func FetchTitleAsync(url string, callback TitleCallback) {
 
 		// If title fetch failed, use URL as fallback
 		if title == "" {
-			title = extractURLName(url)
+			if err != nil {
+				title = extractURLName(url)
+				callback(TitleFetchedMsg{
+					URL:   url,
+					Title: title,
+					Error: err,
+				})
+			} else {
+				title = extractURLName(url)
+				callback(TitleFetchedMsg{
+					URL:   url,
+					Title: title,
+					Error: nil,
+				})
+			}
+		} else {
+			callback(TitleFetchedMsg{
+				URL:   url,
+				Title: title,
+				Error: nil,
+			})
 		}
-		callback(TitleFetchedMsg{
-			URL:   url,
-			Title: title,
-			Error: nil, // Always return nil, fallback to URL if needed
-		})
 	}()
 }
 
