@@ -28,14 +28,15 @@ type VideoDownload struct {
 
 // Top-level TUI model
 type model struct {
-	textInput     textinput.Model
-	status        string
-	videoQueue    []*VideoDownload
-	history       []downloader.VideoInfo
-	selectedIndex int
-	windowWidth   int
-	windowHeight  int
-	hexStream     string // random hex string for bottom-right box
+	textInput      textinput.Model
+	status         string
+	videoQueue     []*VideoDownload
+	history        []downloader.VideoInfo
+	selectedIndex  int
+	windowWidth    int
+	windowHeight   int
+	hexStream      string // random hex string for bottom-right box
+	downloadFormat string // "mp4" or "mp3"
 }
 
 // Messages
@@ -44,6 +45,9 @@ type titleFetchedMsg struct {
 	url   string
 	title string
 	err   error
+}
+type setFormatMsg struct {
+	format string
 }
 
 // Initialize model
@@ -57,14 +61,15 @@ func InitialModel() model {
 	rand.Seed(time.Now().UnixNano())
 
 	return model{
-		textInput:     ti,
-		status:        "SYSTEM ONLINE • READY FOR VARIANT INGEST",
-		videoQueue:    []*VideoDownload{},
-		history:       loadHistory("downloads.json"),
-		selectedIndex: 0,
-		windowWidth:   120,
-		windowHeight:  40,
-		hexStream:     randomHexString(16),
+		textInput:      ti,
+		status:         "SYSTEM ONLINE • READY FOR VARIANT INGEST",
+		videoQueue:     []*VideoDownload{},
+		history:        loadHistory("downloads.json"),
+		selectedIndex:  0,
+		windowWidth:    120,
+		windowHeight:   40,
+		hexStream:      randomHexString(16),
+		downloadFormat: "mp4", // Default to mp4
 	}
 }
 
@@ -104,6 +109,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "ctrl+c", "esc":
 			return m, tea.Quit
+		case "m":
+			if m.downloadFormat == "mp4" {
+				m.downloadFormat = "mp3"
+			} else {
+				m.downloadFormat = "mp4"
+			}
 		case "enter":
 			url := strings.TrimSpace(m.textInput.Value())
 			if url == "" {
@@ -126,7 +137,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.textInput.SetValue("")
 
 			cmds = append(cmds, fetchTitleCmd(vd.URL))
-			cmds = append(cmds, startDownloadCmd(vd))
+			cmds = append(cmds, startDownloadCmd(vd, m.downloadFormat))
 		case "up":
 			if m.selectedIndex > 0 {
 				m.selectedIndex--
@@ -137,7 +148,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
-	case tickMsg:
+	case setFormatMsg:
+		m.downloadFormat = msg.format
 		m.hexStream = formattedHexStream(7, 6)
 
 		for _, vd := range m.videoQueue {
@@ -332,7 +344,7 @@ func (m model) View() string {
 	inputContent := inputTitle + "\n\n" + m.textInput.View()
 	inputContent += "\n\n" + lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#888888")).
-		Render("PRESS ENTER TO CONFIRM • ESC TO EXIT")
+		Render("PRESS ENTER TO CONFIRM • ESC TO EXIT • M TO TOGGLE FORMAT: "+strings.ToUpper(m.downloadFormat))
 
 	// Hex vanity box
 	hexBoxContent := hexBoxStyle.Render(m.hexStream)
@@ -417,9 +429,9 @@ func fetchTitleCmd(url string) tea.Cmd {
 }
 
 // startDownloadCmd launches the downloader in a goroutine
-func startDownloadCmd(vd *VideoDownload) tea.Cmd {
+func startDownloadCmd(vd *VideoDownload, format string) tea.Cmd {
 	return func() tea.Msg {
-		downloader.DownloadStreamWithProgress(vd.URL, func(f float64, line string) {
+		downloader.DownloadStreamWithProgress(vd.URL, format, func(f float64, line string) {
 			select {
 			case vd.ProgressCh <- downloader.ProgressFractionMsg{
 				Fraction: f,

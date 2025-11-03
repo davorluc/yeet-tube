@@ -51,15 +51,27 @@ type VideoInfo struct {
 }
 
 // DownloadStreamWithProgress streams video download progress via callback
-func DownloadStreamWithProgress(url string, callback ProgressCallback) {
+func DownloadStreamWithProgress(url string, format string, callback ProgressCallback) {
 	go func() {
-		cmd := exec.Command(
-			"yt-dlp",
-			"-f", "bestvideo[height<=2160]+bestaudio/best",
-			"--merge-output-format", "mp4",
-			"--newline",
-			url,
-		)
+		var cmd *exec.Cmd
+		if format == "mp3" {
+			cmd = exec.Command(
+				"yt-dlp",
+				"-f", "bestaudio",
+				"--extract-audio",
+				"--audio-format", "mp3",
+				"--newline",
+				url,
+			)
+		} else {
+			cmd = exec.Command(
+				"yt-dlp",
+				"-f", "bestvideo[height<=2160]+bestaudio/best",
+				"--merge-output-format", "mp4",
+				"--newline",
+				url,
+			)
+		}
 
 		stderr, err := cmd.StderrPipe()
 		if err != nil {
