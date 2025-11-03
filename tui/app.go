@@ -35,7 +35,6 @@ type model struct {
 	selectedIndex  int
 	windowWidth    int
 	windowHeight   int
-	hexStream      string // random hex string for bottom-right box
 	downloadFormat string // "mp4" or "mp3"
 }
 
@@ -68,7 +67,6 @@ func InitialModel() model {
 		selectedIndex:  0,
 		windowWidth:    120,
 		windowHeight:   40,
-		hexStream:      randomHexString(16),
 		downloadFormat: "mp4", // Default to mp4
 	}
 }
@@ -150,7 +148,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case setFormatMsg:
 		m.downloadFormat = msg.format
-		m.hexStream = formattedHexStream(7, 6)
+case tickMsg:
 
 		for _, vd := range m.videoQueue {
 			if vd.Done {
@@ -347,7 +345,7 @@ func (m model) View() string {
 		Render("PRESS ENTER TO CONFIRM • ESC TO EXIT • M TO TOGGLE FORMAT: "+strings.ToUpper(m.downloadFormat))
 
 	// Hex vanity box
-	hexBoxContent := hexBoxStyle.Render(m.hexStream)
+	hexBoxContent := hexBoxStyle.Render(formattedHexStream(7, 6))
 
 	// top right box
 	topRightContent := lipgloss.JoinVertical(

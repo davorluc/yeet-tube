@@ -60,6 +60,9 @@ func DownloadStreamWithProgress(url string, format string, callback ProgressCall
 				"-f", "bestaudio",
 				"--extract-audio",
 				"--audio-format", "mp3",
+				"-o", "%(title)s.%(ext)s",
+				"--no-check-certificate",
+				"--add-header", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 				"--newline",
 				url,
 			)
@@ -68,6 +71,9 @@ func DownloadStreamWithProgress(url string, format string, callback ProgressCall
 				"yt-dlp",
 				"-f", "bestvideo[height<=2160]+bestaudio/best",
 				"--merge-output-format", "mp4",
+				"-o", "%(title)s.%(ext)s",
+				"--no-check-certificate",
+				"--add-header", "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
 				"--newline",
 				url,
 			)
